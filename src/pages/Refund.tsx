@@ -4,7 +4,7 @@ import { Select } from "../components/Select";
 import { CATEGORIES, CATEGORIES_KEYS } from "../utils/categories";
 
 export function Refund() {
- const [category, setCategory] = useState("")
+  const [category, setCategory] = useState("")
   return (
     <form className="bg-gray-500 w-full rounded-xl flex flex-col p-10 gap-6
     lg:min-w-[512px]">
@@ -19,21 +19,27 @@ export function Refund() {
       </header>
 
       <Input required legend="Nome da solicitação" />
-      <Select 
-        required 
-        legend="Categorias" 
-        value={category} 
-        onChange={(e) => setCategory(e.target.value)}
-      >
-        {
-          CATEGORIES_KEYS.map((category) => (
-            <option 
-             key={category} 
-             value={category}>{CATEGORIES[category].name}
-            </option>
-          ))
-        }
-      </Select>
+
+      <div className="flex gap-4">
+        <Select
+          required
+          legend="Categorias"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          {
+            CATEGORIES_KEYS.map((category) => (
+              <option
+                key={category}
+                value={category}>{CATEGORIES[category].name}
+              </option>
+            ))
+          }
+        </Select>
+
+        <Input legend="Valor" required />
+
+      </div>
     </form>
   )
 

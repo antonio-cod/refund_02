@@ -6,6 +6,7 @@ npm install tailwindcss @tailwindcss/vite
 npm i react-router
 npm i clsx
 npm i tailwind-merge
+npm i axios
 
 
 

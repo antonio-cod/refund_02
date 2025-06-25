@@ -1,35 +1,43 @@
-import { useState } from "react";
+import { useActionState } from "react";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 
 
 export function SignIn() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [state, formAction, isLoading] = useActionState(signIn, null)
 
-  function onSubmit(e: React.FormEvent){
-    e.preventDefault()
+    async function signIn(prevState: any, formData: FormData) {
+      const email = formData.get("email")
+      const password = formData.get("password")
 
-    // alert("Enviado!")
-    console.log(email, password)
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("ok")
+        }, 3000)
+      })
+
+    
+    
   }
   return (
-    <form onSubmit={onSubmit} className="w-full flex flex-col gap-4">
+    <form action={formAction} className="w-full flex flex-col gap-4">
       <Input  
+      name="email"
         required 
         legend="E-mail"
         type="email"
         placeholder="seu@email.com"
-        onChange={(e) => setEmail(e.target.value)}
+        
+        
       />
 
       <Input  
+      name="password"
         required 
         legend="Senha"
         type="password"
         placeholder="123456"
-        onChange={(e) => setPassword(e.target.value)}
+      
       />
 
       <Button type="submit" isLoading={isLoading}>

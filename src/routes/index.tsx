@@ -1,8 +1,11 @@
 import { BrowserRouter } from "react-router";
+
 import { ManagerRoutes } from "./ManagerRoutes";
-import { AuthRoutes } from "./authRouters";
-import { Loading } from "../components/Loading";
 import { EmployeeRoutes } from "./EmployeeRoutes";
+import { AuthRoutes } from "./authRouters";
+
+import { Loading } from "../components/Loading";
+import { useAuth } from "../hooks/useAuth";
 
 const isLoading = false
 
@@ -13,6 +16,7 @@ const session = {
 }
 
 export function Routes() {
+  const context = useAuth()
   function Route(){
     switch (session.user.role) {
      case "employee":

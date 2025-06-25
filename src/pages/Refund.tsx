@@ -7,6 +7,17 @@ import { Button } from "../components/Button";
 import { useNavigate, useParams } from "react-router";
 
 import fileSvg from "../assets/file.svg";
+import { z } from "zod";
+import { ZodError } from "zod/v4";
+
+const refundSchema = z.object({
+  name: z
+  .string()
+  .min(3, { message: "Informe um nome claro para sua solicitação" }),
+  category: z.string().min(1, { message: "Informe a categoria"}),
+  amount: z.coerce.number({ message: "Informe um valor válido"})
+  .positive({ message: " Informe um valor válido e superior a 0"}),
+})
 
 export function Refund() {
   const [name, setName] = useState("")
@@ -26,10 +37,32 @@ export function Refund() {
       return navigate(-1)
     }
 
-    console.log(name, amount, category, filename)
-    navigate("/confirm", { state: { fromSubmit: true } })
+    try{
+      setIsLoading(true)
 
+      const data = refundSchema.parse({
+        name,
+        category,
+        amount: amount.replace(",", "."),
+
+      })
+
+      console.log(name, amount, category, filename)
+      // navigate("/confirm", { state: { fromSubmit: true } })
+
+    } catch (error) {
+      console.log(error)
+
+      if (error instanceof ZodError) {
+        return alert(error.issues[0].message)
+      }
+
+      alert("Não foi possível realizar a solicitação")
+    } finally {
+      setIsLoading(false)
+    }
   }
+
   return (
     <form
       onSubmit={onSubmit}

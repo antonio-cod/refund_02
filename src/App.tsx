@@ -1,11 +1,10 @@
-import { AuthContext } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { Routes } from "./routes";
 
 export function App(){
   return (
-    <AuthContext.Provider value={{ name: "Antonio"}}>
-
+    <AuthProvider >
       <Routes />
-    </AuthContext.Provider>
+    </AuthProvider>
   )
 }

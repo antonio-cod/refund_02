@@ -7,6 +7,7 @@ npm i react-router
 npm i clsx
 npm i tailwind-merge
 npm i axios
+npm i zod
 
 
 

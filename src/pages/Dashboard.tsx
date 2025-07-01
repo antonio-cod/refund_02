@@ -14,7 +14,7 @@ import type { RefundsPaginationAPIResponse } from "../dtos/refund";
 
 
 
-const PER_PAGE = 5
+const PER_PAGE = 1
 
 export function Dashboard() {
   const [name, setName] = useState("")
@@ -25,7 +25,7 @@ export function Dashboard() {
   async function fetchRefunds() {
     try {
       const response = await api.get<RefundsPaginationAPIResponse>(
-        `/refunds?name=${name.trim()}&page=${page}&perPage${PER_PAGE}`
+        `/refunds?name=${name.trim()}&page=${page}&perPage=${PER_PAGE}`
       )
       setRefunds(
 
@@ -50,6 +50,11 @@ export function Dashboard() {
     }
   }
 
+  function onSubmit(e: React.FormEvent){
+    e.preventDefault()
+    fetchRefunds()
+  }
+
   function handlePagination(action: "next" | "previous") {
     setPage((prevPage) => {
       if (action === "next" && prevPage < totalOfPage) {
@@ -65,14 +70,14 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchRefunds()
-  })
+  }, [page])
 
   return (
     <div className="bg-gray-500 rounded-xl p-10 md:min-w-[768px]">
       <h1 className="text-gray-100 font-bold text-xl flex-1">Solicitações</h1>
 
       <form
-        onSubmit={fetchRefunds}
+        onSubmit={onSubmit}
         className="flex items-center justify-between pb-6 border-b-[1px]
        border-b-gray-400 md:flex-row gap-2 mt-6">
         <Input

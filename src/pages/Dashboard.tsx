@@ -1,47 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 import searchSvg from "../assets/search.svg"
-import {CATEGORIES} from "../utils/categories"
+import { CATEGORIES } from "../utils/categories"
 
-import { RefundItem, type RefundItemProps} from "../components/RefundItem";
+import { RefundItem, type RefundItemProps } from "../components/RefundItem";
 import { formatCurrency } from "../utils/formatCurrency";
 import { Pagination } from "../components/Pagination";
+import { api } from "../services/api";
+import { AxiosError } from "axios";
+import type { RefundsPaginationAPIResponse } from "../dtos/refund";
 
 
-const REFUND_EXAMPLE = {
-  id: "123",
-  name: "Antonio",
-  category: "Transporte",
-  amount: formatCurrency(34.5),
-  categoryImg: CATEGORIES["transport"].icon
-}
+
+const PER_PAGE = 5
 
 export function Dashboard() {
   const [name, setName] = useState("")
   const [page, setPage] = useState(1)
-  const [totalOfPage, setTotalOfPage] = useState(10)
-  const [refunds, setRefunds] = useState<RefundItemProps[]>([REFUND_EXAMPLE])
+  const [totalOfPage, setTotalOfPage] = useState(0)
+  const [refunds, setRefunds] = useState<RefundItemProps[]>([])
 
-  function fetchRefunds(e: React.FormEvent) {
-    e.preventDefault()
-    console.log(name)
+  async function fetchRefunds() {
+    try {
+      const response = await api.get<RefundsPaginationAPIResponse>(
+        `/refunds?name=${name.trim()}&page=${page}&perPage${PER_PAGE}`
+      )
+      setRefunds(
 
+        response.data.refunds.map((refund) => ({
+          id: refund.id,
+          name: refund.user.name,
+          description: refund.name,
+          amount: formatCurrency(refund.amount),
+          categoryImg: CATEGORIES[refund.category].icon,
+        }))
+      )
+
+      setTotalOfPage(response.data.pagination.totalPages)
+    } catch (error) {
+      console.log(error)
+
+      if (error instanceof AxiosError) {
+        return alert(error.response?.data.message)
+      }
+
+      alert("Não foi possível carregar")
+    }
   }
 
   function handlePagination(action: "next" | "previous") {
     setPage((prevPage) => {
-      if(action === "next" && prevPage < totalOfPage) {
+      if (action === "next" && prevPage < totalOfPage) {
         return prevPage + 1
       }
 
-      if(action == "previous" && prevPage > 1){
+      if (action == "previous" && prevPage > 1) {
         return prevPage - 1
-    }
-    return  prevPage
+      }
+      return prevPage
     })
   }
+
+  useEffect(() => {
+    fetchRefunds()
+  })
 
   return (
     <div className="bg-gray-500 rounded-xl p-10 md:min-w-[768px]">
@@ -57,23 +81,23 @@ export function Dashboard() {
         />
 
         <Button type="submit" variant="icon">
-         <img src={searchSvg} alt="Ícone de pesquisar"
-         className="w-5" />
+          <img src={searchSvg} alt="Ícone de pesquisar"
+            className="w-5" />
         </Button>
       </form>
 
       <div className="my-6 flex flex-col gap-4 max-h-[342px] overflow-y-scroll">
         {refunds.map((item) => (
-            <RefundItem key={item.id} data={item} href={`/refund/${item.id}`} />
-          ))
+          <RefundItem key={item.id} data={item} href={`/refund/${item.id}`} />
+        ))
         }
       </div>
 
-      <Pagination 
-      current={page} 
-      total={totalOfPage} 
-      onNext={() => handlePagination("next")}
-      onPrevious={() => handlePagination("previous")}
+      <Pagination
+        current={page}
+        total={totalOfPage}
+        onNext={() => handlePagination("next")}
+        onPrevious={() => handlePagination("previous")}
       />
     </div>
   )
